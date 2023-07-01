@@ -12,7 +12,7 @@ var (
 	//go:embed definition.abnf
 	definitionSpec string
 
-	//go:embed core.abnf
+	//go:embed core/core.abnf
 	coreSpec string
 )
 

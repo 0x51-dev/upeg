@@ -50,9 +50,11 @@ func init() {
 type DependencyTree = map[string]map[string]struct{}
 
 type Generator struct {
-	IgnoreAll  bool
-	Ignore     map[string]struct{}
-	references []string
+	PackageName string
+	IgnoreAll   bool
+	Ignore      map[string]struct{}
+	ImportCore  bool
+	references  []string
 }
 
 func (g *Generator) GenerateOperators(input []rune) (string, error) {
@@ -138,7 +140,8 @@ func (g *Generator) generateOperators(list *ir.Rulelist) (string, error) {
 	}
 	var tmpl bytes.Buffer
 	if err := t.Execute(&tmpl, &abnfTemplateData{
-		PackageName: "abnf",
+		PackageName: g.PackageName,
+		ImportCore:  g.ImportCore,
 		References:  g.references,
 		Rules:       g.rulelistToGo(list),
 	}); err != nil {
@@ -254,6 +257,9 @@ func (g *Generator) toGo(v any, references []string) string {
 		case 0:
 			return ""
 		case 1:
+			if s == "'" {
+				return "'\\''"
+			}
 			return fmt.Sprintf("'%s'", strings.TrimPrefix(strings.TrimSuffix(string(*v), "\""), "\""))
 		default:
 			return string(*v)
@@ -285,6 +291,7 @@ type abnfRule struct {
 
 type abnfTemplateData struct {
 	PackageName string
+	ImportCore  bool
 	References  []string
 	Rules       []abnfRule
 }

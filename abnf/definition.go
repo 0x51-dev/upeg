@@ -2,6 +2,7 @@
 package abnf
 
 import (
+	. "github.com/0x51-dev/upeg/abnf/core"
 	"github.com/0x51-dev/upeg/parser"
 	"github.com/0x51-dev/upeg/parser/op"
 )

@@ -12,6 +12,8 @@ func main() {
 	var output = flag.String("out", "definition.go", "output file")
 	var ignoreAll = flag.Bool("ignoreAll", false, "do not create capture groups for all rules")
 	var ignoreList = flag.String("ignore", "", "comma separated list of rules to ignore")
+	var importCore = flag.Bool("importCore", false, "import core rules")
+	var packageName = flag.String("package", "abnf", "package name")
 	flag.Parse()
 
 	ignore := make(map[string]struct{})
@@ -24,8 +26,10 @@ func main() {
 		panic(err)
 	}
 	g := gen.Generator{
-		IgnoreAll: *ignoreAll,
-		Ignore:    ignore,
+		PackageName: *packageName,
+		IgnoreAll:   *ignoreAll,
+		Ignore:      ignore,
+		ImportCore:  *importCore,
 	}
 	out, err := g.GenerateOperators([]rune(string(rawInput)))
 	if err != nil {
