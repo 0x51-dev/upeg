@@ -33,6 +33,22 @@ func checkParent(n *parser.Node, name string) error {
 	return nil
 }
 
+func flatten(n *parser.Node) []*parser.Node {
+	if n.Name != "" {
+		return n.Children()
+	}
+	var nodes []*parser.Node
+	for _, n := range n.Children() {
+		switch n.Name {
+		case "":
+			nodes = append(nodes, flatten(n)...)
+		default:
+			nodes = append(nodes, n)
+		}
+	}
+	return nodes
+}
+
 type Alternation struct {
 	Concatenations []*Concatenation
 }
@@ -45,12 +61,18 @@ func ParseAlternation(n *parser.Node) (*Alternation, error) {
 	for _, n := range n.Children() {
 		switch n.Name {
 		case "":
-			for _, n := range n.Children() {
-				concatenation, err := ParseConcatenation(n)
-				if err != nil {
-					return nil, err
+			for _, n := range flatten(n) {
+				switch n.Name {
+				case "Concatenation":
+					concatenation, err := ParseConcatenation(n)
+					if err != nil {
+						return nil, err
+					}
+					concatenations = append(concatenations, concatenation)
+				case "Comment": // Ignore these.
+				default:
+					return nil, NewInvalidNodeError("Concatenation", n.Name)
 				}
-				concatenations = append(concatenations, concatenation)
 			}
 		case "Concatenation":
 			concatenation, err := ParseConcatenation(n)
@@ -104,12 +126,18 @@ func ParseConcatenation(n *parser.Node) (*Concatenation, error) {
 	for _, n := range n.Children() {
 		switch n.Name {
 		case "":
-			for _, n := range n.Children() {
-				repetition, err := ParseRepetition(n)
-				if err != nil {
-					return nil, err
+			for _, n := range flatten(n) {
+				switch n.Name {
+				case "Repetition":
+					repetition, err := ParseRepetition(n)
+					if err != nil {
+						return nil, err
+					}
+					repetitions = append(repetitions, repetition)
+				case "Comment": // Ignore these.
+				default:
+					return nil, NewInvalidNodeError("Repetition", n.Name)
 				}
-				repetitions = append(repetitions, repetition)
 			}
 		case "Repetition":
 			repetition, err := ParseRepetition(n)
