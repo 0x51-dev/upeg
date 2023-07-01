@@ -23,11 +23,6 @@ func (c Cursor) Character() rune {
 	return c.character
 }
 
-// Position returns the absolute position in the input.
-func (c Cursor) Position() uint {
-	return c.position
-}
-
 // LastNewLine returns the last end of line absolute position.
 func (c Cursor) LastNewLine() uint {
 	return c.lastNewline
@@ -36,6 +31,11 @@ func (c Cursor) LastNewLine() uint {
 // Line returns the current line.
 func (c Cursor) Line() (uint, uint) {
 	return c.line, c.column
+}
+
+// Position returns the absolute position in the input.
+func (c Cursor) Position() uint {
+	return c.position
 }
 
 // String returns the string representation of the cursor.

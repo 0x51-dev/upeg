@@ -40,5 +40,5 @@ func (c Capture) String() string {
 	if c.Name == "" {
 		return fmt.Sprintf("{%s}", StringAny(c.Value))
 	}
-	return fmt.Sprintf("%s", c.Name)
+	return c.Name
 }

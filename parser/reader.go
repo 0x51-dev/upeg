@@ -31,6 +31,16 @@ func (r *Reader) Cursor() Cursor {
 	return r.cursor
 }
 
+// Done returns true if the reader is done.
+func (r *Reader) Done() bool {
+	return r.cursor.position >= uint(len(r.input))
+}
+
+// GetInputRange returns the input range from start to end.
+func (r *Reader) GetInputRange(start Cursor, end Cursor) []rune {
+	return r.input[start.position:end.position]
+}
+
 func (r *Reader) GetLine(end Cursor) []rune {
 	position := end.position
 	if position == uint(len(r.input)) {
@@ -47,16 +57,6 @@ func (r *Reader) GetLine(end Cursor) []rune {
 		character = r.input[position]
 	}
 	return r.input[end.lastNewline:position]
-}
-
-// Done returns true if the reader is done.
-func (r *Reader) Done() bool {
-	return r.cursor.position >= uint(len(r.input))
-}
-
-// GetInputRange returns the input range from start to end.
-func (r *Reader) GetInputRange(start Cursor, end Cursor) []rune {
-	return r.input[start.position:end.position]
 }
 
 // Jump to the given cursor. Ignore if cursor is nil or the reader is done.

@@ -7,6 +7,16 @@ import (
 	"testing"
 )
 
+func ExampleAny() {
+	p, _ := parser.New([]rune("abc"))
+	_, err := p.Match(op.Repeat{Min: 4, Max: 4, Value: op.Any{}})
+	fmt.Println(err)
+	// Output:
+	// [1:3] "�" | no match: .
+	// abc
+	// ---^
+}
+
 func TestAny_Match(t *testing.T) {
 	input := "abc"
 	p, err := parser.New([]rune(input))
@@ -25,14 +35,4 @@ func TestAny_Match(t *testing.T) {
 	if _, err := p.Match(op.Any{}); err == nil {
 		t.Fatal("expected error")
 	}
-}
-
-func ExampleAny() {
-	p, _ := parser.New([]rune("abc"))
-	_, err := p.Match(op.Repeat{Min: 4, Max: 4, Value: op.Any{}})
-	fmt.Println(err)
-	// Output:
-	// [1:3] "�" | no match: .
-	// abc
-	// ---^
 }

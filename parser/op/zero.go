@@ -11,14 +11,13 @@ type ZeroOrMore struct {
 }
 
 func (zero ZeroOrMore) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
-	end := start
 	for {
 		var err error
-		if end, err = p.Match(zero.Value); err != nil {
+		if _, err = p.Match(zero.Value); err != nil {
 			break
 		}
 	}
-	return end, nil
+	return start, nil
 }
 
 func (zero ZeroOrMore) Parse(p *parser.Parser) (*parser.Node, error) {
@@ -32,7 +31,13 @@ func (zero ZeroOrMore) Parse(p *parser.Parser) (*parser.Node, error) {
 			nodes = append(nodes, node)
 		}
 	}
-	return nil, nil
+	if len(nodes) == 0 {
+		return nil, nil
+	}
+	if len(nodes) == 1 {
+		return nodes[0], nil
+	}
+	return parser.NewParentNode("", nodes), nil
 }
 
 func (zero ZeroOrMore) String() string {

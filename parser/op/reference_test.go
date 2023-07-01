@@ -8,7 +8,7 @@ import (
 
 func TestReference(t *testing.T) {
 	circular := op.Or{op.And{'0', op.Reference{Name: "circular"}}, "1"}
-	t.Run("Match", func(t *testing.T) {
+	t.Run("Parse", func(t *testing.T) {
 		for _, test := range []string{
 			"01",
 			"001",
@@ -28,8 +28,5 @@ func TestReference(t *testing.T) {
 				t.Errorf("expected %s, got %s", test, n.Value())
 			}
 		}
-	})
-	t.Run("Parse", func(t *testing.T) {
-
 	})
 }

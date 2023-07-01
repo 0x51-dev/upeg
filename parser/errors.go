@@ -58,15 +58,6 @@ type NoMatchError struct {
 	err error
 }
 
-// NewNoMatchError returns a new NoMatchError.
-func (p *Parser) NewNoMatchError(v any, end Cursor) *NoMatchError {
-	return &NoMatchError{
-		v:   v,
-		end: end,
-		p:   p,
-	}
-}
-
 // Error returns the error message.
 func (e *NoMatchError) Error() string {
 	if e.err != nil {
@@ -80,5 +71,14 @@ func (e *NoMatchError) Error() string {
 		return fmt.Sprintf("%s | no match: %q\n%s\n%s^", e.end, e.v, l, p)
 	default:
 		return fmt.Sprintf("%s | no match: %v\n%s\n%s^", e.end, e.v, l, p)
+	}
+}
+
+// NewNoMatchError returns a new NoMatchError.
+func (p *Parser) NewNoMatchError(v any, end Cursor) *NoMatchError {
+	return &NoMatchError{
+		v:   v,
+		end: end,
+		p:   p,
 	}
 }
