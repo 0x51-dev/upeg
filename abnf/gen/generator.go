@@ -50,11 +50,13 @@ func init() {
 type DependencyTree = map[string]map[string]struct{}
 
 type Generator struct {
-	PackageName string
-	IgnoreAll   bool
-	Ignore      map[string]struct{}
-	ImportCore  bool
-	references  []string
+	PackageName     string
+	IgnoreAll       bool
+	Ignore          map[string]struct{}
+	ImportCore      bool
+	CustomOperators map[string]struct{}
+
+	references []string
 }
 
 func (g *Generator) GenerateOperators(input []rune) (string, error) {
@@ -166,6 +168,11 @@ func (g *Generator) ruleName(s string) string {
 func (g *Generator) rulelistToGo(list *ir.Rulelist) []abnfRule {
 	reference := make(map[string][]string)
 	deps := g.dependencyTree(list)
+	for custom := range g.CustomOperators {
+		// Remove any custom operators form the (cyclic) dependency list.
+		delete(deps, custom)
+	}
+
 	var names []string
 	for _, rule := range list.Rules {
 		name := g.ruleName(rule.Rulename)
@@ -186,10 +193,14 @@ func (g *Generator) rulelistToGo(list *ir.Rulelist) []abnfRule {
 		if _, ok := g.Ignore[rule.Rulename]; !g.IgnoreAll && !ok {
 			operator = fmt.Sprintf("op.Capture{Name: %q, Value: %s}", names[i], operator)
 		}
+		if _, ok := g.CustomOperators[rule.Rulename]; ok {
+			operator = fmt.Sprintf("%sOperator{} // %s", g.ruleName(rule.Rulename), operator)
+		}
 		rules = append(rules, abnfRule{
 			Name:     names[i],
 			Operator: operator,
 		})
+
 	}
 	return rules
 }

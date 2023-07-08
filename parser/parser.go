@@ -65,6 +65,5 @@ func (p *Parser) matchPrimitive(start Cursor, v any) (Cursor, error) {
 
 	default:
 		return start, NewInvalidTypeError(v)
-
 	}
 }

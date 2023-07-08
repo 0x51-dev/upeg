@@ -14,6 +14,7 @@ func main() {
 	var ignoreList = flag.String("ignore", "", "comma separated list of rules to ignore")
 	var importCore = flag.Bool("importCore", false, "import core rules")
 	var packageName = flag.String("package", "abnf", "package name")
+	var customList = flag.String("custom", "", "comma separated list of custom operators")
 	flag.Parse()
 
 	ignore := make(map[string]struct{})
@@ -21,15 +22,21 @@ func main() {
 		ignore[v] = struct{}{}
 	}
 
+	custom := make(map[string]struct{})
+	for _, v := range strings.Split(*customList, ",") {
+		custom[v] = struct{}{}
+	}
+
 	rawInput, err := os.ReadFile(*input)
 	if err != nil {
 		panic(err)
 	}
 	g := gen.Generator{
-		PackageName: *packageName,
-		IgnoreAll:   *ignoreAll,
-		Ignore:      ignore,
-		ImportCore:  *importCore,
+		PackageName:     *packageName,
+		IgnoreAll:       *ignoreAll,
+		Ignore:          ignore,
+		ImportCore:      *importCore,
+		CustomOperators: custom,
 	}
 	out, err := g.GenerateOperators([]rune(string(rawInput)))
 	if err != nil {
