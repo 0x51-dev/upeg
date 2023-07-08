@@ -49,17 +49,27 @@ func init() {
 
 type DependencyTree = map[string]map[string]struct{}
 
-type Generator struct {
-	PackageName     string
-	IgnoreAll       bool
-	Ignore          map[string]struct{}
-	ImportCore      bool
-	CustomOperators map[string]struct{}
+type ExternalDependency struct {
+	Name string
+	Path string
+}
 
-	references []string
+type Generator struct {
+	PackageName          string
+	IgnoreAll            bool
+	Ignore               map[string]struct{}
+	ImportCore           bool
+	CustomOperators      map[string]struct{}
+	ExternalDependencies map[string]ExternalDependency
+
+	usedExternalDependencies map[string]struct{}
+	references               []string
 }
 
 func (g *Generator) GenerateOperators(input []rune) (string, error) {
+	g.usedExternalDependencies = make(map[string]struct{})
+	g.references = nil // Reset.
+
 	p, err := abnf.NewParser(input)
 	if err != nil {
 		return "", err
@@ -120,6 +130,10 @@ func (g *Generator) dependencies(v any) map[string]struct{} {
 		return g.dependencies(v.Alternation)
 	case *ir.Rulename:
 		return map[string]struct{}{g.ruleName(string(*v)): {}}
+	case *ir.ProseVal:
+		name := string(*v)
+		name = name[1 : len(name)-1] // Remove "<>"
+		return map[string]struct{}{g.ruleName(name): {}}
 	case *ir.NumVal, *ir.CharVal: // Ignore
 		return nil
 	default:
@@ -140,12 +154,20 @@ func (g *Generator) generateOperators(list *ir.Rulelist) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("template not found")
 	}
+
+	rules := g.rulelistToGo(list)
+	var dependencies []string
+	for k := range g.usedExternalDependencies {
+		dependencies = append(dependencies, k)
+	}
+
 	var tmpl bytes.Buffer
 	if err := t.Execute(&tmpl, &abnfTemplateData{
-		PackageName: g.PackageName,
-		ImportCore:  g.ImportCore,
-		References:  g.references,
-		Rules:       g.rulelistToGo(list),
+		PackageName:  g.PackageName,
+		ImportCore:   g.ImportCore,
+		References:   g.references,
+		Dependencies: dependencies,
+		Rules:        rules,
 	}); err != nil {
 		return "", err
 	}
@@ -289,7 +311,15 @@ func (g *Generator) toGo(v any, references []string) string {
 		if ref {
 			return fmt.Sprintf("op.Reference{Name: %q}", name)
 		}
+		if e, ok := g.ExternalDependencies[string(*v)]; ok {
+			g.usedExternalDependencies[e.Path] = struct{}{}
+			return fmt.Sprintf("%s.%s", e.Name, name)
+		}
 		return name
+	case *ir.ProseVal:
+		name := string(*v)
+		rname := ir.Rulename(name[1 : len(name)-1])
+		return g.toGo(&rname, references)
 	default:
 		panic(fmt.Errorf("unsupported type %T", v))
 	}
@@ -301,8 +331,9 @@ type abnfRule struct {
 }
 
 type abnfTemplateData struct {
-	PackageName string
-	ImportCore  bool
-	References  []string
-	Rules       []abnfRule
+	PackageName  string
+	ImportCore   bool
+	Dependencies []string
+	References   []string
+	Rules        []abnfRule
 }

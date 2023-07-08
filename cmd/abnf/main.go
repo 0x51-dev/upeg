@@ -15,6 +15,7 @@ func main() {
 	var importCore = flag.Bool("importCore", false, "import core rules")
 	var packageName = flag.String("package", "abnf", "package name")
 	var customList = flag.String("custom", "", "comma separated list of custom operators")
+	var dependencyList = flag.String("dependencies", "", "semicolon seperated list of dependencies")
 	flag.Parse()
 
 	ignore := make(map[string]struct{})
@@ -27,16 +28,33 @@ func main() {
 		custom[v] = struct{}{}
 	}
 
+	dependencies := make(map[string]gen.ExternalDependency)
+	for _, dependency := range strings.Split(*dependencyList, ";") {
+		dep := strings.Split(dependency, ",")
+		if len(dep) < 2 {
+			continue
+		}
+		path := dep[0]
+		name := dep[0][strings.LastIndex(path, "/")+1:]
+		for _, o := range dep[1:] {
+			dependencies[o] = gen.ExternalDependency{
+				Path: path,
+				Name: name,
+			}
+		}
+	}
+
 	rawInput, err := os.ReadFile(*input)
 	if err != nil {
 		panic(err)
 	}
 	g := gen.Generator{
-		PackageName:     *packageName,
-		IgnoreAll:       *ignoreAll,
-		Ignore:          ignore,
-		ImportCore:      *importCore,
-		CustomOperators: custom,
+		PackageName:          *packageName,
+		IgnoreAll:            *ignoreAll,
+		Ignore:               ignore,
+		ImportCore:           *importCore,
+		CustomOperators:      custom,
+		ExternalDependencies: dependencies,
 	}
 	out, err := g.GenerateOperators([]rune(string(rawInput)))
 	if err != nil {
