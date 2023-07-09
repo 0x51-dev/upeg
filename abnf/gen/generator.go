@@ -317,6 +317,10 @@ func (g *Generator) toGo(v any, references []string) string {
 		if ref {
 			return fmt.Sprintf("op.Reference{Name: %q}", name)
 		}
+		if _, ok := g.CustomOperators[string(*v)]; ok {
+			log.Printf("[CUSTOM] %q.", string(*v))
+			return fmt.Sprintf("%sOperator{}", name)
+		}
 		if e, ok := g.ExternalDependencies[string(*v)]; ok {
 			g.usedExternalDependencies[e.Path] = struct{}{}
 			log.Printf("[DEPENDENCY] %q", name)
