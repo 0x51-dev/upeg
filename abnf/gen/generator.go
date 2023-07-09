@@ -9,6 +9,7 @@ import (
 	"github.com/0x51-dev/upeg/parser/op"
 	"io"
 	"io/fs"
+	"log"
 	"strings"
 	"text/template"
 	"unicode"
@@ -201,6 +202,7 @@ func (g *Generator) rulelistToGo(list *ir.Rulelist) []abnfRule {
 		c := g.cyclic(deps, name)
 		if len(c) != 0 {
 			g.references = append(g.references, name)
+			log.Printf("[CYCLIC REF] %q.", name)
 			for dep := range c {
 				delete(deps[dep], name)
 				reference[dep] = append(reference[dep], name)
@@ -216,6 +218,7 @@ func (g *Generator) rulelistToGo(list *ir.Rulelist) []abnfRule {
 			operator = fmt.Sprintf("op.Capture{Name: %q, Value: %s}", names[i], operator)
 		}
 		if _, ok := g.CustomOperators[rule.Rulename]; ok {
+			log.Printf("[CUSTOM] %q.", rule.Rulename)
 			operator = fmt.Sprintf("%sOperator{} // %s", g.ruleName(rule.Rulename), operator)
 		}
 		rules = append(rules, abnfRule{
@@ -290,12 +293,15 @@ func (g *Generator) toGo(v any, references []string) string {
 		case 0:
 			return ""
 		case 1:
+			if s == "\\" {
+				return "'\\\\'"
+			}
 			if s == "'" {
 				return "'\\''"
 			}
-			return fmt.Sprintf("'%s'", strings.TrimPrefix(strings.TrimSuffix(string(*v), "\""), "\""))
+			return fmt.Sprintf("'%s'", s)
 		default:
-			return string(*v)
+			return fmt.Sprintf("%+q", string(*v))
 		}
 	case *ir.Option:
 		return fmt.Sprintf("op.Optional{Value: %s}", g.toGo(v.Alternation, references))
@@ -313,11 +319,13 @@ func (g *Generator) toGo(v any, references []string) string {
 		}
 		if e, ok := g.ExternalDependencies[string(*v)]; ok {
 			g.usedExternalDependencies[e.Path] = struct{}{}
+			log.Printf("[DEPENDENCY] %q", name)
 			return fmt.Sprintf("%s.%s", e.Name, name)
 		}
 		return name
 	case *ir.ProseVal:
 		name := string(*v)
+		log.Printf("[PROSE VAL] %q.", g.ruleName(name))
 		rname := ir.Rulename(name[1 : len(name)-1])
 		return g.toGo(&rname, references)
 	default:

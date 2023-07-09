@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/0x51-dev/upeg/abnf/gen"
+	"log"
 	"os"
 	"strings"
 )
@@ -46,8 +47,9 @@ func main() {
 
 	rawInput, err := os.ReadFile(*input)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+	log.Printf("Started generating: %q.", *input)
 	g := gen.Generator{
 		PackageName:          *packageName,
 		IgnoreAll:            *ignoreAll,
@@ -58,9 +60,10 @@ func main() {
 	}
 	out, err := g.GenerateOperators([]rune(string(rawInput)))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+	log.Printf("Done generating: %q.", *output)
 	if err := os.WriteFile(*output, []byte(out), 0644); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
