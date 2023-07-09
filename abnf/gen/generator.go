@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"sort"
 	"strings"
 	"text/template"
 	"unicode"
@@ -161,6 +162,9 @@ func (g *Generator) generateOperators(list *ir.Rulelist) (string, error) {
 	for k := range g.usedExternalDependencies {
 		dependencies = append(dependencies, k)
 	}
+	sort.Slice(dependencies, func(i, j int) bool {
+		return dependencies[i] < dependencies[j]
+	})
 
 	var tmpl bytes.Buffer
 	if err := t.Execute(&tmpl, &abnfTemplateData{

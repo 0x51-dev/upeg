@@ -1,11 +1,7 @@
 .PHONY: test test-cover gen gen-ic fmt
 
 test:
-	go test -v -cover ./...
-
-test-cover:
-	go test -v -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out
+	go test -v -cover ./... --count=5
 
 gen:
 	go generate
