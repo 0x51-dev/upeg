@@ -11,13 +11,15 @@ type ZeroOrMore struct {
 }
 
 func (zero ZeroOrMore) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
+	var end = start
 	for {
-		var err error
-		if _, err = p.Match(zero.Value); err != nil {
+		c, err := p.Match(zero.Value)
+		if err != nil {
 			break
 		}
+		end = c
 	}
-	return start, nil
+	return end, nil
 }
 
 func (zero ZeroOrMore) Parse(p *parser.Parser) (*parser.Node, error) {

@@ -13,6 +13,7 @@ func (n Peek) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error
 	if _, err := p.Match(n.Value); err != nil {
 		return start, err
 	}
+	p.Reader.Jump(start)
 	return start, nil
 }
 

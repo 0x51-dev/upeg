@@ -1,29 +1,39 @@
 package op_test
 
 import (
+	"fmt"
 	"github.com/0x51-dev/upeg/parser"
 	"github.com/0x51-dev/upeg/parser/op"
 	"testing"
 )
 
-var AndTestCases = []AndTestCase{
-	{"abc", op.And{'a', "bc"}},
-	{"abc", op.And{op.Any{}, "bc"}},
-	{"abc", op.And{op.Any{}, op.Any{}, 'c'}},
-	{"abc", op.And{op.Or{'a', 'b'}, 'b', 'c'}},
-	{"abc", op.And{op.Or{'b', 'a'}, 'b', 'c'}},
-	{"abbbc", op.And{'a', op.OneOrMore{Value: op.And{op.Not{Value: op.And{'a', 'c'}}, 'b'}}, 'c'}},
+var ZeroTestCases = []ZeroTestCase{
+	{"aaa", op.ZeroOrMore{Value: 'a'}},
+	{"aaaaa", op.ZeroOrMore{Value: 'a'}},
+	{"abababaaa", op.ZeroOrMore{Value: op.Or{'a', 'b'}}},
 }
 
-func TestAnd(t *testing.T) {
+func ExampleZeroOrMore_endsWith() {
+	p, _ := parser.New([]rune("aa.a.a.a"))
+	start := p.Reader.Cursor()
+	c, err := p.Match(op.And{op.ZeroOrMore{Value: op.And{
+		op.Or{'a', '.'},
+		op.Peek{Value: op.Or{'a', '.'}},
+	}}, 'a'})
+	fmt.Println(string(p.Reader.GetInputRange(start, c)), err)
+	// Output:
+	// aa.a.a.a <nil>
+}
+
+func TestZero(t *testing.T) {
 	t.Run("Match", func(t *testing.T) {
-		for _, test := range AndTestCases {
+		for _, test := range ZeroTestCases {
 			p, err := parser.New([]rune(test.input))
 			if err != nil {
 				t.Fatal(err)
 			}
 			start := p.Reader.Cursor()
-			c, err := p.Match(append(test.consumer))
+			c, err := p.Match(op.And{test.consumer})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -46,7 +56,7 @@ func TestAnd(t *testing.T) {
 	})
 }
 
-type AndTestCase struct {
+type ZeroTestCase struct {
 	input    string
-	consumer op.And
+	consumer op.ZeroOrMore
 }
