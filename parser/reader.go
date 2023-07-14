@@ -2,8 +2,9 @@ package parser
 
 import (
 	"fmt"
-	"unicode/utf8"
 )
+
+const ReaderDone = rune(-1)
 
 // Reader is the input reader.
 type Reader struct {
@@ -68,7 +69,7 @@ func (r *Reader) Jump(marker Cursor) {
 func (r *Reader) Next() *Reader {
 	r.cursor.position++
 	if r.Done() {
-		r.cursor.character = utf8.RuneError
+		r.cursor.character = ReaderDone
 		return r
 	}
 
@@ -96,7 +97,7 @@ func (r *Reader) Next() *Reader {
 // Rune returns the current rune.
 func (r *Reader) Rune() rune {
 	if r.Done() {
-		return utf8.RuneError
+		return ReaderDone
 	}
 	return r.cursor.character
 }

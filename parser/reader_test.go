@@ -3,7 +3,6 @@ package parser_test
 import (
 	. "github.com/0x51-dev/upeg/parser"
 	"testing"
-	"unicode/utf8"
 )
 
 func TestReader(t *testing.T) {
@@ -31,7 +30,7 @@ func TestReader(t *testing.T) {
 			}
 			r.Next()
 		}
-		if r.Cursor().Position() != uint(len(str)) || r.Cursor().Character() != utf8.RuneError {
+		if r.Cursor().Position() != uint(len(str)) || r.Cursor().Character() != ReaderDone {
 			t.Fatalf("invalid cursor: %s", r.Cursor())
 		}
 	})
@@ -143,8 +142,8 @@ func TestReader_GetInputRange(t *testing.T) {
 	if !r.Done() {
 		t.Fatalf("expected done")
 	}
-	if c := r.Rune(); c != utf8.RuneError {
-		t.Errorf("expected %c, got %c", utf8.RuneError, c)
+	if c := r.Rune(); c != ReaderDone {
+		t.Errorf("expected %c, got %c", ReaderDone, c)
 	}
 }
 
