@@ -13,19 +13,6 @@ var (
 	definitionSpec string
 )
 
-func TestSpecifications(t *testing.T) {
-	for _, spec := range []string{definitionSpec} {
-		p, err := parser.New([]rune(spec))
-		if err != nil {
-			t.Fatal(err)
-		}
-		p.Rules["Expression"] = peg.Expression
-		if _, err := p.Parse(op.And{peg.Grammar, op.EOF{}}); err != nil {
-			t.Fatal(err)
-		}
-	}
-}
-
 func TestSpacing(t *testing.T) {
 	for _, test := range []string{
 		" ",
@@ -40,6 +27,19 @@ func TestSpacing(t *testing.T) {
 			t.Fatal(err)
 		}
 		if _, err := p.Parse(op.And{peg.Spacing, op.EOF{}}); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestSpecifications(t *testing.T) {
+	for _, spec := range []string{definitionSpec} {
+		p, err := parser.New([]rune(spec))
+		if err != nil {
+			t.Fatal(err)
+		}
+		p.Rules["Expression"] = peg.Expression
+		if _, err := p.Parse(op.And{peg.Grammar, op.EOF{}}); err != nil {
 			t.Fatal(err)
 		}
 	}

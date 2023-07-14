@@ -1,6 +1,7 @@
 package op
 
 import (
+	"fmt"
 	"github.com/0x51-dev/upeg/parser"
 )
 
@@ -16,4 +17,16 @@ func (a Any) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error)
 
 func (a Any) String() string {
 	return "."
+}
+
+type AnyBut struct {
+	Value any
+}
+
+func (a AnyBut) Match(_ parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
+	return p.Match(And{Not(a), Any{}})
+}
+
+func (a AnyBut) String() string {
+	return fmt.Sprintf("!%s .", StringAny(a.Value))
 }

@@ -42,6 +42,14 @@ func (p *Parser) Parse(v any) (*Node, error) {
 	return nil, err
 }
 
+// Reset the parser. All state is lost.
+func (p *Parser) Reset() *Parser {
+	p.Reader.cursor = Cursor{
+		character: p.Reader.input[0],
+	}
+	return p
+}
+
 // matchPrimitive matches a primitive value. Supports runes and strings.
 func (p *Parser) matchPrimitive(start Cursor, v any) (Cursor, error) {
 	switch v := v.(type) {
