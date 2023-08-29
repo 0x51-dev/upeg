@@ -22,11 +22,7 @@ func (r Reference) Parse(p *parser.Parser) (*parser.Node, error) {
 	if !ok {
 		return nil, fmt.Errorf("rule %s not found", r.Name)
 	}
-	if v, ok := v.(Capture); ok {
-		return v.Parse(p)
-	}
-	_, err := p.Match(v)
-	return nil, err
+	return p.Parse(v)
 }
 
 func (r Reference) String() string {
