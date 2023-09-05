@@ -12,8 +12,8 @@ type Not struct {
 
 func (n Not) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
 	if end, err := p.Match(n.Value); err == nil {
-		p.Reader.Jump(start)
-		return start, parser.NewErrorStack(p.NewNoMatchError(n, end), err)
+		p.Reader.Jump(start) // Reset the reader.
+		return start, parser.NewErrorStack(p.NewNoMatchError(n, start, end), err)
 	}
 	return start, nil
 }

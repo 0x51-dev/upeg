@@ -53,24 +53,21 @@ func (p *Parser) Reset() *Parser {
 // matchPrimitive matches a primitive value. Supports runes and strings.
 func (p *Parser) matchPrimitive(start Cursor, v any) (Cursor, error) {
 	switch v := v.(type) {
-
 	case rune:
 		if start.character != v {
-			return start, p.NewNoMatchError(v, start)
+			return start, p.NewNoMatchError(v, start, start)
 		}
 		return p.Reader.Next().Cursor(), nil
-
 	case string:
 		end := start
 		for _, r := range v {
-			var err error
-			if end, err = p.matchPrimitive(end, r); err != nil {
+			if end.character != r {
 				p.Reader.Jump(start)
-				return end, NewErrorStack(p.NewNoMatchError(v, end), err)
+				return end, p.NewNoMatchError(v, start, end)
 			}
+			end = p.Reader.Next().Cursor()
 		}
 		return end, nil
-
 	default:
 		return start, NewInvalidTypeError(v)
 	}

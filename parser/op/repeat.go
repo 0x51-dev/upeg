@@ -22,10 +22,11 @@ func (r Repeat) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, err
 	}
 	if r.Max != int(r.Min) {
 		for i := int(r.Min); r.Max <= 0 || i < r.Max; i++ {
-			var err error
-			if end, err = p.Match(r.Value); err != nil {
+			c, err := p.Match(r.Value)
+			if err != nil {
 				break
 			}
+			end = c
 		}
 	}
 	return end, nil

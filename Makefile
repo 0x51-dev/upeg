@@ -1,4 +1,4 @@
-.PHONY: test test-cover gen gen-ic fmt
+.PHONY: test gen fmt
 
 test:
 	go test -v -cover ./... --count=5

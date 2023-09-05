@@ -3,6 +3,7 @@ package parser_test
 import (
 	"fmt"
 	"github.com/0x51-dev/upeg/parser"
+	"github.com/0x51-dev/upeg/parser/op"
 )
 
 func ExampleInvalidTypeError() {
@@ -13,14 +14,14 @@ func ExampleInvalidTypeError() {
 
 func ExampleNoMatchError() {
 	p, _ := parser.New([]rune("test"))
-	_, err := p.Match("testify")
+	_, err := p.Match(op.And{'t', 'e', 's', 't', 'i', 'f', 'y'})
 	fmt.Println(err)
 	// Output:
 	// error stack:
-	// 2) [1:4] "�" | no match: "testify"
+	// 2) [1:1/1:5] '�' | no match: ('t' 'e' 's' 't' 'i' 'f' 'y')
 	// test
 	// ----^
-	// 1) [1:4] "�" | no match: 'i'
+	// 1) [1:5/1:5] '�' | no match: 'i'
 	// test
 	// ----^
 }

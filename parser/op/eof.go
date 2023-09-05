@@ -8,11 +8,10 @@ import (
 type EOF struct{}
 
 func (eof EOF) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
-	if p.Reader.Done() {
-		return start, nil
+	if !p.Reader.Done() {
+		return start, p.NewNoMatchError(eof, start, p.Reader.Cursor())
 	}
-	c := p.Reader.Cursor()
-	return start, p.NewNoMatchError(eof, c)
+	return start, nil
 }
 
 func (eof EOF) String() string {

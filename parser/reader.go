@@ -34,28 +34,27 @@ func (r *Reader) Cursor() Cursor {
 
 // Done returns true if the reader is done.
 func (r *Reader) Done() bool {
-	return r.cursor.position >= uint(len(r.input))
+	return len(r.input) <= r.cursor.position
 }
 
-// GetInputRange returns the input range from start to end.
+// GetInputRange returns the input range from start to end (excl).
 func (r *Reader) GetInputRange(start Cursor, end Cursor) []rune {
 	return r.input[start.position:end.position]
 }
 
+// GetLine returns the line from the given cursor starting at the last newline until the end cursor.
 func (r *Reader) GetLine(end Cursor) []rune {
 	position := end.position
-	if position == uint(len(r.input)) {
+	if position == len(r.input) {
 		// Return the last line.
 		return r.input[end.lastNewline:]
 	}
 
-	character := r.input[position]
-	for position < uint(len(r.input)) && character != '\n' && character != '\r' {
+	for character := r.input[position]; position < len(r.input) && character != '\n' && character != '\r'; character = r.input[position] {
 		// Reached the end of the input.
-		if position++; position == uint(len(r.input)) {
+		if position++; position == len(r.input) {
 			return r.input[end.lastNewline:]
 		}
-		character = r.input[position]
 	}
 	return r.input[end.lastNewline:position]
 }
@@ -69,6 +68,7 @@ func (r *Reader) Jump(marker Cursor) {
 func (r *Reader) Next() *Reader {
 	r.cursor.position++
 	if r.Done() {
+		r.cursor.column++
 		r.cursor.character = ReaderDone
 		return r
 	}

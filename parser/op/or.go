@@ -9,15 +9,15 @@ import (
 type Or []any
 
 func (or Or) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
-	var end parser.Cursor
+	var end parser.Cursor // Last matched cursor.
 	var err error
 	for _, r := range or {
 		if end, err = p.Match(r); err == nil {
 			return end, nil
 		}
 	}
-	p.Reader.Jump(start)
-	return start, parser.NewErrorStack(p.NewNoMatchError(or, end), err)
+	// Will only include the last error, all other errors are ignored.
+	return start, parser.NewErrorStack(p.NewNoMatchError(or, start, end), err)
 }
 
 func (or Or) Parse(p *parser.Parser) (*parser.Node, error) {
@@ -29,9 +29,7 @@ func (or Or) Parse(p *parser.Parser) (*parser.Node, error) {
 			return node, nil
 		}
 	}
-	end := p.Reader.Cursor()
-	p.Reader.Jump(start)
-	return nil, parser.NewErrorStack(p.NewNoMatchError(or, end), err)
+	return nil, parser.NewErrorStack(p.NewNoMatchError(or, start, start), err)
 }
 
 func (or Or) String() string {

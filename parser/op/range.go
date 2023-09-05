@@ -16,10 +16,9 @@ type RuneRange struct {
 func (r RuneRange) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
 	c := start.Character()
 	if c < r.Min || r.Max < c {
-		return start, p.NewNoMatchError(r, start)
+		return start, p.NewNoMatchError(r, start, start)
 	}
-	p.Reader.Next()
-	return start, nil
+	return p.Reader.Next().Cursor(), nil
 }
 
 func (r RuneRange) String() string {

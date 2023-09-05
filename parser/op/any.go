@@ -10,7 +10,7 @@ type Any struct{}
 
 func (a Any) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
 	if p.Reader.Done() {
-		return start, p.NewNoMatchError(a, start)
+		return start, p.NewNoMatchError(a, start, start)
 	}
 	return p.Reader.Next().Cursor(), nil
 }

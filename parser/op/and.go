@@ -14,8 +14,8 @@ func (and And) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, erro
 	for _, r := range and {
 		var err error
 		if end, err = p.Match(r); err != nil {
-			p.Reader.Jump(start)
-			return end, parser.NewErrorStack(p.NewNoMatchError(and, end), err)
+			p.Reader.Jump(start) // Reset the reader.
+			return end, parser.NewErrorStack(p.NewNoMatchError(and, start, end), err)
 		}
 	}
 	return end, nil
@@ -25,11 +25,11 @@ func (and And) Parse(p *parser.Parser) (*parser.Node, error) {
 	start := p.Reader.Cursor()
 	var nodes []*parser.Node
 	for _, r := range and {
+		end := p.Reader.Cursor()
 		node, err := p.Parse(r)
 		if err != nil {
-			end := p.Reader.Cursor()
 			p.Reader.Jump(start)
-			return nil, parser.NewErrorStack(p.NewNoMatchError(and, end), err)
+			return nil, parser.NewErrorStack(p.NewNoMatchError(and, start, end), err)
 		}
 		if node != nil {
 			nodes = append(nodes, node)

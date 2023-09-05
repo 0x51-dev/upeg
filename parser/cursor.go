@@ -7,15 +7,15 @@ type Cursor struct {
 	// character is the current character rune.
 	character rune
 	// position is the absolute position in the input.
-	position uint
+	position int
 
 	// lastNewline is the last newline absolute position.
-	lastNewline uint
+	lastNewline int
 
 	// line is the current line.
-	line uint
+	line int
 	// column is the current column.
-	column uint
+	column int
 }
 
 // Character returns the current character rune.
@@ -24,17 +24,17 @@ func (c Cursor) Character() rune {
 }
 
 // LastNewLine returns the last end of line absolute position.
-func (c Cursor) LastNewLine() uint {
+func (c Cursor) LastNewLine() int {
 	return c.lastNewline
 }
 
 // Line returns the current line.
-func (c Cursor) Line() (uint, uint) {
+func (c Cursor) Line() (int, int) {
 	return c.line, c.column
 }
 
 // Position returns the absolute position in the input.
-func (c Cursor) Position() uint {
+func (c Cursor) Position() int {
 	return c.position
 }
 

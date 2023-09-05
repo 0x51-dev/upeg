@@ -10,25 +10,25 @@ type OneOrMore struct {
 }
 
 func (one OneOrMore) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
+	var end parser.Cursor // Last matched cursor.
 	var err error
-	if _, err = p.Match(one.Value); err != nil {
-		p.Reader.Jump(start)
-		return start, err
+	if end, err = p.Match(one.Value); err != nil {
+		return end, parser.NewErrorStack(p.NewNoMatchError(one, start, end), err)
 	}
 	for {
-		if _, err = p.Match(one.Value); err != nil {
+		c, err := p.Match(one.Value)
+		if err != nil {
 			break
 		}
+		end = c
 	}
-	return start, nil
+	return end, nil
 }
 
 func (one OneOrMore) Parse(p *parser.Parser) (*parser.Node, error) {
-	start := p.Reader.Cursor()
 	var nodes []*parser.Node
 	node, err := p.Parse(one.Value)
 	if err != nil {
-		p.Reader.Jump(start)
 		return nil, err
 	}
 	if node != nil {

@@ -1,6 +1,7 @@
 package op_test
 
 import (
+	"errors"
 	"fmt"
 	"github.com/0x51-dev/upeg/parser"
 	"github.com/0x51-dev/upeg/parser/op"
@@ -12,7 +13,7 @@ func ExampleAny() {
 	_, err := p.Match(op.Repeat{Min: 4, Max: 4, Value: op.Any{}})
 	fmt.Println(err)
 	// Output:
-	// [1:3] "�" | no match: .
+	// [1:4/1:4] '�' | no match: .
 	// abc
 	// ---^
 }
@@ -35,4 +36,47 @@ func TestAny_Match(t *testing.T) {
 	if _, err := p.Match(op.Any{}); err == nil {
 		t.Fatal("expected error")
 	}
+}
+
+func TestAny_error(t *testing.T) {
+	// If we try to match/parse '.' against "", we should get an error.
+	// The returned cursor should be '-1', and the parser cursor should be at the start.
+	t.Run("Match", func(t *testing.T) {
+		p, err := parser.New([]rune("a"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		start := p.Reader.Cursor()
+		c, err := p.Match(op.And{'a', op.Any{}})
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if c.Character() != -1 { // EOF
+			t.Fatalf("expected cursor to be at '-1', got %c", c.Character())
+		}
+		if p.Reader.Cursor() != start {
+			t.Fatal("expected cursor to be at start")
+		}
+	})
+	t.Run("Parse", func(t *testing.T) {
+		p, err := parser.New([]rune("a"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		start := p.Reader.Cursor()
+		_, err = p.Parse(op.And{'a', op.Any{}})
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		var stack *parser.ErrorStack
+		errors.As(err, &stack)
+		var match *parser.NoMatchError
+		errors.As(stack.Errors[0], &match)
+		if match.End.Character() != -1 { // EOF
+			t.Fatalf("expected cursor to be at '-1', got %c", match.End.Character())
+		}
+		if p.Reader.Cursor() != start {
+			t.Fatal("expected cursor to be at start")
+		}
+	})
 }

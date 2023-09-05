@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"fmt"
 	. "github.com/0x51-dev/upeg/parser"
 	"testing"
 )
@@ -25,12 +26,12 @@ func TestReader(t *testing.T) {
 		str := "test"
 		r, _ := NewReader([]rune("test"))
 		for i, c := range str {
-			if r.Cursor().Position() != uint(i) || r.Cursor().Character() != c {
+			if r.Cursor().Position() != i || r.Cursor().Character() != c {
 				t.Fatalf("invalid cursor: %s", r.Cursor())
 			}
 			r.Next()
 		}
-		if r.Cursor().Position() != uint(len(str)) || r.Cursor().Character() != ReaderDone {
+		if r.Cursor().Position() != len(str) || r.Cursor().Character() != ReaderDone {
 			t.Fatalf("invalid cursor: %s", r.Cursor())
 		}
 	})
@@ -71,38 +72,39 @@ func TestReader(t *testing.T) {
 func TestReader_Cursor(t *testing.T) {
 	for _, test := range []struct {
 		input                  string
-		position, line, column uint
-		lastNl                 uint
+		position, line, column int
+		lastNl                 int
 	}{
 		{
 			input:    "test",
 			position: 4,
 			line:     0,
-			column:   3, // "t"
+			column:   4, // EOF
 			lastNl:   0,
 		},
 		{
 			input:    "\ntest",
 			position: 5,
 			line:     1,
-			column:   3, // "t"
+			column:   4, // EOF
 			lastNl:   1,
 		},
 		{
 			input:    "\r\ntest",
 			position: 6,
 			line:     1,
-			column:   3, // "t"
+			column:   4, // EOF
 			lastNl:   2,
 		},
 		{
 			input:    "\n\r\n\rtest", // Combine \n, \r\n and \r.
 			position: 8,
 			line:     3,
-			column:   3, // "t"
+			column:   4, // EOF
 			lastNl:   4,
 		},
 	} {
+		fmt.Println(test.input)
 		r, err := NewReader([]rune(test.input))
 		if err != nil {
 			t.Fatal(err)
@@ -111,10 +113,10 @@ func TestReader_Cursor(t *testing.T) {
 			r.Next()
 		}
 		if r.Cursor().Position() != test.position {
-			t.Fatalf("invalid position: %d", r.Cursor().Position())
+			t.Fatalf("invalid position: expected %d, got %d", test.position, r.Cursor().Position())
 		}
 		if line, column := r.Cursor().Line(); line != test.line || column != test.column {
-			t.Fatalf("invalid line/column: %s", r.Cursor())
+			t.Fatalf("invalid line/column: expected %d:%d, got %d:%d", test.line, test.column, line, column)
 		}
 		if r.Cursor().LastNewLine() != test.lastNl {
 			t.Fatalf("invalid lastEOL: %d", r.Cursor().LastNewLine())
