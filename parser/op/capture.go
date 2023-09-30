@@ -5,8 +5,11 @@ import (
 	"github.com/0x51-dev/upeg/parser"
 )
 
+// Capture is a named expression.
 type Capture struct {
-	Name  string
+	// Name is required, it will otherwise be ignored while flattening the AST.
+	Name string
+	// Value is the expression to capture.
 	Value any
 }
 

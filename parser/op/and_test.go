@@ -94,6 +94,22 @@ func TestAnd_error(t *testing.T) {
 	})
 }
 
+func TestAnd_flatten(t *testing.T) {
+	p, err := parser.New([]rune("abcbc"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a := op.Capture{Name: "a", Value: 'a'}
+	bc := op.Capture{Name: "bc", Value: "bc"}
+	n, err := p.Parse(op.And{a, op.ZeroOrMore{Value: bc}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(n.Children()) != 3 {
+		t.Fatalf("expected 3 children, got %d", len(n.Children()))
+	}
+}
+
 type AndTestCase struct {
 	input    string
 	consumer op.And

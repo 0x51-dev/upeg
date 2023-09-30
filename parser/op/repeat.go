@@ -42,7 +42,11 @@ func (r Repeat) Parse(p *parser.Parser) (*parser.Node, error) {
 			return nil, err
 		}
 		if node != nil {
-			nodes = append(nodes, node)
+			if node.Name == "" {
+				nodes = append(nodes, node.Children()...)
+			} else {
+				nodes = append(nodes, node)
+			}
 		}
 	}
 	if r.Max != int(r.Min) {
@@ -52,7 +56,11 @@ func (r Repeat) Parse(p *parser.Parser) (*parser.Node, error) {
 				break
 			}
 			if node != nil {
-				nodes = append(nodes, node)
+				if node.Name == "" {
+					nodes = append(nodes, node.Children()...)
+				} else {
+					nodes = append(nodes, node)
+				}
 			}
 		}
 	}

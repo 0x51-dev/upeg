@@ -32,7 +32,11 @@ func (and And) Parse(p *parser.Parser) (*parser.Node, error) {
 			return nil, parser.NewErrorStack(p.NewNoMatchError(and, start, end), err)
 		}
 		if node != nil {
-			nodes = append(nodes, node)
+			if node.Name == "" {
+				nodes = append(nodes, node.Children()...)
+			} else {
+				nodes = append(nodes, node)
+			}
 		}
 	}
 	if len(nodes) == 0 {

@@ -68,7 +68,7 @@ func TestCapture(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.Capture{Name: "test", Value: op.And{op.Capture{Value: "ab"}, op.Capture{Value: 'c'}}})
+		n, err := p.Parse(op.Capture{Name: "test", Value: op.And{op.Capture{Name: "ab", Value: "ab"}, op.Capture{Name: "c", Value: 'c'}}})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -92,14 +92,23 @@ func TestCapture(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			n, err := p.Parse(op.Capture{Name: "test", Value: op.And{'a', op.Capture{Value: "bc"}}})
+			n, err := p.Parse(op.Capture{Name: "test", Value: op.And{'a', op.Capture{Name: "bc", Value: "bc"}}})
 			if err != nil {
 				t.Fatal(err)
 			}
 			if n.Name != "test" {
 				t.Fatalf("expected name to be 'test', got '%s'", n.Name)
 			}
-			if v := n.Value(); v != "bc" {
+			if v := n.Value(); v != "" {
+				t.Fatalf("expected value to be 'bc', got '%s'", v)
+			}
+			if l := len(n.Children()); l != 1 {
+				t.Fatalf("expected 1 child, got %d", l)
+			}
+			if n.Children()[0].Name != "bc" {
+				t.Fatalf("expected child name to be 'bc', got '%s'", n.Children()[0].Name)
+			}
+			if v := n.Children()[0].Value(); v != "bc" {
 				t.Fatalf("expected value to be 'bc', got '%s'", v)
 			}
 		})
