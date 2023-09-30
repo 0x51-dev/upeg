@@ -80,6 +80,7 @@ func ParseAlternation(n *parser.Node) (*Alternation, error) {
 				return nil, err
 			}
 			concatenations = append(concatenations, concatenation)
+		case "Comment": // Ignore these.
 		default:
 			return nil, NewInvalidNodeError("Concatenation", n.Name)
 		}
