@@ -4,7 +4,7 @@
 
 This is a universal parser expression grammar focused on simplicity and extensibility.
 
-Inspired PEG, PEGN, and ABNF.
+Inspired by PEG, PEGN, and ABNF.
 
 ## ABNF
 

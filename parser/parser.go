@@ -5,6 +5,10 @@ type Parser struct {
 	// Reader is the input reader.
 	Reader *Reader
 	Rules  map[string]Operator
+
+	// ignore is the list of runes to ignore.
+	ignore        []any
+	disableIgnore bool
 }
 
 // New creates a new parser.
@@ -19,10 +23,18 @@ func New(input []rune) (*Parser, error) {
 	}, nil
 }
 
+func (p *Parser) IgnoreDisabled() bool {
+	return p.disableIgnore
+}
+
 // Match the given value.
 // Returns the end cursor if the match was successful.
 // Returns an error if the match failed.
 func (p *Parser) Match(v any) (Cursor, error) {
+	if !p.disableIgnore {
+		p.ignoreAll()
+	}
+
 	start := p.Reader.Cursor()
 
 	// Match operator.
@@ -36,6 +48,9 @@ func (p *Parser) Match(v any) (Cursor, error) {
 // Parse the given value.
 func (p *Parser) Parse(v any) (*Node, error) {
 	if v, ok := v.(Capture); ok {
+		if !p.disableIgnore {
+			p.ignoreAll()
+		}
 		return v.Parse(p)
 	}
 	_, err := p.Match(v)
@@ -48,6 +63,33 @@ func (p *Parser) Reset() *Parser {
 		character: p.Reader.input[0],
 	}
 	return p
+}
+
+func (p *Parser) SetIgnoreList(ignore []any) {
+	p.ignore = ignore
+}
+
+func (p *Parser) ToggleIgnore(disable bool) {
+	p.disableIgnore = disable
+}
+
+func (p *Parser) ignoreAll() {
+	disableIgnore := p.disableIgnore
+	p.ToggleIgnore(true)
+	defer p.ToggleIgnore(disableIgnore)
+
+	for {
+		var found bool
+		for _, i := range p.ignore {
+			if _, iErr := p.Match(i); iErr == nil {
+				found = true
+				break
+			}
+		}
+		if !found {
+			break
+		}
+	}
 }
 
 // matchPrimitive matches a primitive value. Supports runes and strings.

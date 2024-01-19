@@ -13,12 +13,8 @@ type Capture struct {
 	Value any
 }
 
-func (c Capture) Match(start parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
-	end, err := p.Match(c.Value)
-	if err != nil {
-		return start, err
-	}
-	return end, nil
+func (c Capture) Match(_ parser.Cursor, p *parser.Parser) (parser.Cursor, error) {
+	return p.Match(c.Value)
 }
 
 func (c Capture) Parse(p *parser.Parser) (*parser.Node, error) {
@@ -35,8 +31,7 @@ func (c Capture) Parse(p *parser.Parser) (*parser.Node, error) {
 		}
 		return parser.NewParentNode(c.Name, []*parser.Node{node}), nil
 	}
-	end := p.Reader.Cursor()
-	return parser.NewNode(c.Name, string(p.Reader.GetInputRange(start, end))), nil
+	return parser.NewNode(c.Name, string(p.Reader.GetInputRange(start, p.Reader.Cursor()))), nil
 }
 
 func (c Capture) String() string {

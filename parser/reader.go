@@ -89,8 +89,8 @@ func (r *Reader) Next() *Reader {
 		r.cursor.column = 0
 		r.cursor.lastNewline = r.cursor.position
 	}
-
 	r.cursor.character = next
+
 	return r
 }
 
