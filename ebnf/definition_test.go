@@ -2,6 +2,7 @@ package ebnf
 
 import (
 	_ "embed"
+	"github.com/0x51-dev/upeg/ebnf/ir"
 	"github.com/0x51-dev/upeg/parser/op"
 	"testing"
 )
@@ -115,7 +116,11 @@ func TestEBNF(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Grammar, op.EOF{}}); err != nil {
+		n, err := p.Parse(op.And{Grammar, op.EOF{}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := ir.ParseGrammar(n); err != nil {
 			t.Fatal(err)
 		}
 	}
