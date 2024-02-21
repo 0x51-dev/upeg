@@ -282,13 +282,24 @@ func (g *Generator) toGo(v any, references []string) string {
 	case *ir.NumVal:
 		switch []rune(*v)[0] {
 		case 'x':
-			s := strings.Split(strings.TrimPrefix(string(*v), "x"), "-")
-			switch len(s) {
-			case 1:
-				return fmt.Sprintf("rune(0x%s)", s[0])
-			case 2:
-				return fmt.Sprintf("op.RuneRange{Min: 0x%s, Max: 0x%s}", s[0], s[1])
+			x := strings.TrimPrefix(string(*v), "x")
+			if strings.Contains(x, "-") {
+				s := strings.Split(x, "-")
+				switch len(s) {
+				case 2:
+					return fmt.Sprintf("op.RuneRange{Min: 0x%s, Max: 0x%s}", s[0], s[1])
+				default:
+					panic(fmt.Errorf("invalid range %s", *v))
+				}
 			}
+			if strings.Contains(x, ".") {
+				var xs []string
+				for _, x := range strings.Split(x, ".") {
+					xs = append(xs, fmt.Sprintf("rune(0x%s)", x))
+				}
+				return fmt.Sprintf("op.And{%s}", strings.Join(xs, ", "))
+			}
+			return fmt.Sprintf("rune(0x%s)", x)
 		}
 		panic(fmt.Errorf("invalid range %s", *v))
 	case *ir.CharVal:
