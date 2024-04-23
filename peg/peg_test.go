@@ -3,7 +3,6 @@ package peg_test
 import (
 	_ "embed"
 	"github.com/0x51-dev/upeg/parser"
-	"github.com/0x51-dev/upeg/parser/op"
 	"github.com/0x51-dev/upeg/peg"
 	"testing"
 )
@@ -26,7 +25,7 @@ func TestSpacing(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{peg.Spacing, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(peg.Spacing); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -39,7 +38,7 @@ func TestSpecifications(t *testing.T) {
 			t.Fatal(err)
 		}
 		p.Rules["Expression"] = peg.Expression
-		if _, err := p.Parse(op.And{peg.Grammar, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(peg.Grammar); err != nil {
 			t.Fatal(err)
 		}
 	}

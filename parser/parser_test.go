@@ -18,14 +18,11 @@ func TestParser_Parse_string(t *testing.T) {
 			t.Fatal(err)
 		}
 		p.SetIgnoreList([]any{' '})
-		n, err := p.Parse(op.And{
-			op.OneOrMore{
-				Value: op.Capture{
-					Name:  "String",
-					Value: op.And{'"', op.ZeroOrMore{Value: op.AnyBut{Value: '"'}}, '"'},
-				},
+		n, err := p.ParseEOF(op.OneOrMore{
+			Value: op.Capture{
+				Name:  "String",
+				Value: op.And{'"', op.ZeroOrMore{Value: op.AnyBut{Value: '"'}}, '"'},
 			},
-			op.EOF{},
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -67,11 +64,11 @@ func TestParser_SetIgnoreList(t *testing.T) {
 		op.EndOfLine{},
 		op.And{"/*", op.ZeroOrMore{Value: op.AnyBut{Value: "*/"}}, "*/"},
 	})
-	if _, err := p.Parse(op.And{'a', '=', 'b', op.EOF{}}); err != nil {
+	if _, err := p.ParseEOF(op.And{'a', '=', 'b'}); err != nil {
 		t.Fatal(err)
 	}
 	p.Reset()
-	if _, err := p.Parse(op.And{'a', '=', 'b', op.EOF{}}); err != nil {
+	if _, err := p.ParseEOF(op.And{'a', '=', 'b'}); err != nil {
 		t.Fatal(err)
 	}
 }

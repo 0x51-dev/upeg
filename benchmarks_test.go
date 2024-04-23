@@ -15,7 +15,7 @@ func BenchmarkRepeat(b *testing.B) {
 	}
 	b.Run("ZeroOrMore", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			if _, err := p.Parse(op.And{'a', op.ZeroOrMore{Value: op.And{';', 'a'}}, op.EOF{}}); err != nil {
+			if _, err := p.ParseEOF(op.And{'a', op.ZeroOrMore{Value: op.And{';', 'a'}}}); err != nil {
 				b.Fatal(err)
 			}
 			p.Reset()
@@ -28,7 +28,7 @@ func BenchmarkRepeat(b *testing.B) {
 		}
 		p.Rules["as"] = as
 		for i := 0; i < b.N; i++ {
-			if _, err := p.Parse(op.And{as, op.EOF{}}); err != nil {
+			if _, err := p.ParseEOF(as); err != nil {
 				b.Fatal(err)
 			}
 			p.Reset()

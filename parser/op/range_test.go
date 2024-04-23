@@ -13,10 +13,10 @@ func Test0xFFFD(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{op.RuneRange{Min: 0x7D, Max: 0x10FFFF}, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(op.RuneRange{Min: 0x7D, Max: 0x10FFFF}); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{op.ZeroOrMore{Value: op.RuneRange{Min: 0x7D, Max: 0x10FFFF}}, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(op.ZeroOrMore{Value: op.RuneRange{Min: 0x7D, Max: 0x10FFFF}}); err != nil {
 			t.Fatal(err)
 		}
 	}

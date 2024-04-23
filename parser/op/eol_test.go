@@ -13,14 +13,14 @@ var EOLTestCases = []EOLTestCase{
 }
 
 func TestEOL(t *testing.T) {
-	eol := op.And{op.EndOfLine{}, op.EOF{}} // op.EOL{}
+	eol := op.And{op.EndOfLine{}} // op.EOL{}
 	t.Run("Match", func(t *testing.T) {
 		for _, test := range EOLTestCases {
 			p, err := parser.New([]rune(test.input))
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Match(eol); err != nil {
+			if _, err := p.MatchEOF(eol); err != nil {
 				t.Fatal(err)
 			}
 		}

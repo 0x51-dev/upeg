@@ -18,7 +18,7 @@ func TestNot(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Match(op.And{test.consumer, test.input, op.EOF{}}); err != nil {
+			if _, err := p.MatchEOF(op.And{test.consumer, test.input}); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -29,7 +29,7 @@ func TestNot(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Parse(op.And{test.consumer, test.input, op.EOF{}}); err != nil {
+			if _, err := p.ParseEOF(op.And{test.consumer, test.input}); err != nil {
 				t.Fatal(err)
 			}
 		}

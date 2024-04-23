@@ -59,7 +59,7 @@ func TestIPv6address(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{IPv6address, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(IPv6address); err != nil {
 			t.Error(err)
 		}
 	}
@@ -71,7 +71,7 @@ func TestSpecifications(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{abnf.Rulelist, op.EOF{}})
+		n, err := p.ParseEOF(abnf.Rulelist)
 		if err != nil {
 			t.Fatal(err)
 		}

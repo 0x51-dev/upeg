@@ -49,7 +49,7 @@ func TestZero(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Parse(append(test.consumer, op.EOF{})); err != nil {
+			if _, err := p.ParseEOF(test.consumer); err != nil {
 				t.Fatal(err)
 			}
 		}

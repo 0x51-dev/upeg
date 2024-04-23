@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/0x51-dev/upeg/abnf"
 	"github.com/0x51-dev/upeg/abnf/ir"
-	"github.com/0x51-dev/upeg/parser/op"
 	"io"
 	"io/fs"
 	"log"
@@ -76,7 +75,7 @@ func (g *Generator) GenerateOperators(input []rune) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	n, err := p.Parse(op.And{abnf.Rulelist, op.EOF{}})
+	n, err := p.ParseEOF(abnf.Rulelist)
 	if err != nil {
 		return "", err
 	}

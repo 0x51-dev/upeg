@@ -4,7 +4,6 @@ import (
 	"github.com/0x51-dev/upeg/abnf"
 	"github.com/0x51-dev/upeg/abnf/ir"
 	"github.com/0x51-dev/upeg/parser"
-	"github.com/0x51-dev/upeg/parser/op"
 	"testing"
 )
 
@@ -30,7 +29,7 @@ func TestParseAlternation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{abnf.Alternation, op.EOF{}})
+		n, err := p.Parse(abnf.Alternation)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -62,7 +61,7 @@ func TestParseOption(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{abnf.Option, op.EOF{}})
+		n, err := p.ParseEOF(abnf.Option)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -130,7 +129,7 @@ func TestParseRepetition(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{abnf.Repetition, op.EOF{}})
+		n, err := p.ParseEOF(abnf.Repetition)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -150,7 +149,7 @@ func TestParseRulename(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	n, err := p.Parse(op.And{abnf.Rulename, op.EOF{}})
+	n, err := p.ParseEOF(abnf.Rulename)
 	if err != nil {
 		t.Fatal(err)
 	}

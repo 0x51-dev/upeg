@@ -21,7 +21,7 @@ func TestOr(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Match(op.And{test.consumer, op.EOF{}}); err != nil {
+			if _, err := p.MatchEOF(test.consumer); err != nil {
 				t.Fatal(err)
 			}
 		}
@@ -32,7 +32,7 @@ func TestOr(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Parse(op.And{test.consumer, op.EOF{}}); err != nil {
+			if _, err := p.ParseEOF(test.consumer); err != nil {
 				t.Fatal(err)
 			}
 		}

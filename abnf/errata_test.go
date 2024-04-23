@@ -3,7 +3,6 @@ package abnf_test
 import (
 	"github.com/0x51-dev/upeg/abnf/core"
 	"github.com/0x51-dev/upeg/parser"
-	"github.com/0x51-dev/upeg/parser/op"
 	"testing"
 )
 
@@ -14,7 +13,7 @@ func TestErrata(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := p.Parse(op.And{core.CRLF, op.EOF{}}); err != nil {
+			if _, err := p.ParseEOF(core.CRLF); err != nil {
 				t.Fatal(err)
 			}
 		}

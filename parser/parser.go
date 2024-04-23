@@ -45,6 +45,22 @@ func (p *Parser) Match(v any) (Cursor, error) {
 	return p.matchPrimitive(start, v)
 }
 
+// MatchEOF matches the given value and ensures that the end of the input is reached.
+func (p *Parser) MatchEOF(v any) (Cursor, error) {
+	end, err := p.Match(v)
+	if err != nil {
+		return end, err
+	}
+
+	if !p.disableIgnore {
+		p.ignoreAll()
+	}
+	if !p.Reader.Done() {
+		return end, p.NewNoMatchError("EOF", p.Reader.Cursor(), p.Reader.Cursor())
+	}
+	return end, nil
+}
+
 // Parse the given value.
 func (p *Parser) Parse(v any) (*Node, error) {
 	if v, ok := v.(Capture); ok {
@@ -55,6 +71,22 @@ func (p *Parser) Parse(v any) (*Node, error) {
 	}
 	_, err := p.Match(v)
 	return nil, err
+}
+
+// ParseEOF parses the given value and ensures that the end of the input is reached.
+func (p *Parser) ParseEOF(v any) (*Node, error) {
+	n, err := p.Parse(v)
+	if err != nil {
+		return nil, err
+	}
+
+	if !p.disableIgnore {
+		p.ignoreAll()
+	}
+	if !p.Reader.Done() {
+		return nil, p.NewNoMatchError("EOF", p.Reader.Cursor(), p.Reader.Cursor())
+	}
+	return n, nil
 }
 
 // Reset the parser. All state is lost.

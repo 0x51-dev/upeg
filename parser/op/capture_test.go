@@ -174,7 +174,7 @@ func TestCapture_Parse_children(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{op.Capture{Name: "test", Value: test.op}, op.EOF{}})
+		n, err := p.ParseEOF(op.Capture{Name: "test", Value: test.op})
 		if err != nil {
 			t.Fatal(err)
 		}

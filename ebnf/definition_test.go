@@ -29,7 +29,7 @@ func TestAlternation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Definition, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Definition); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -51,7 +51,7 @@ func TestComment(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Comment, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Comment); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -65,7 +65,7 @@ func TestComplex(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Grammar, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Grammar); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -83,7 +83,7 @@ func TestConcatenation(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Definition, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Definition); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -100,7 +100,7 @@ func TestDefinition(t *testing.T) {
 			t.Fatal(err)
 		}
 		p.SetIgnoreList([]any{' ', '\t', '\n', '\r'})
-		if _, err := p.Parse(op.And{Definition, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Definition); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -116,7 +116,7 @@ func TestEBNF(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		n, err := p.Parse(op.And{Grammar, op.EOF{}})
+		n, err := p.ParseEOF(Grammar)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -134,7 +134,7 @@ func TestGrammar(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Grammar, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Grammar); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -151,7 +151,7 @@ func TestIdentifier(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Identifier, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Identifier); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -166,7 +166,7 @@ func TestOptional(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{Definition, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(Definition); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -184,7 +184,7 @@ func TestString(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := p.Parse(op.And{String, op.EOF{}}); err != nil {
+		if _, err := p.ParseEOF(String); err != nil {
 			t.Fatal(err)
 		}
 	}
