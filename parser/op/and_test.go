@@ -2,10 +2,10 @@ package op_test
 
 import (
 	"errors"
-	"fmt"
+	"testing"
+
 	"github.com/0x51-dev/upeg/parser"
 	"github.com/0x51-dev/upeg/parser/op"
-	"testing"
 )
 
 var AndTestCases = []AndTestCase{
@@ -84,7 +84,6 @@ func TestAnd_error(t *testing.T) {
 		errors.As(err, &stack)
 		var match *parser.NoMatchError
 		errors.As(stack.Errors[1], &match)
-		fmt.Println(stack)
 		if match.End.Character() != 'b' {
 			t.Fatalf("expected cursor to be at 'b', got %c", match.End.Character())
 		}

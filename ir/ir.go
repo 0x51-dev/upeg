@@ -2,8 +2,9 @@ package ir
 
 import (
 	"fmt"
-	"github.com/0x51-dev/upeg/parser"
 	"strings"
+
+	"github.com/0x51-dev/upeg/parser"
 )
 
 func ParseRulename(n *parser.Node) (string, error) {
@@ -244,6 +245,16 @@ func ParseRepeat(n *parser.Node) (*Repeat, error) {
 		return nil, err
 	}
 	v := n.Value()
+	switch v {
+	case "+":
+		one := "1"
+		return &Repeat{
+			Min: &one,
+		}, nil
+	case "*":
+		return &Repeat{}, nil
+	}
+
 	if !strings.ContainsRune(v, '*') {
 		return &Repeat{
 			Min: &v,
@@ -298,65 +309,48 @@ func ParseRepetition(n *parser.Node) (*Repetition, error) {
 	if err := checkParent(n, "Repetition"); err != nil {
 		return nil, err
 	}
+	var v Element
 	var r *Repeat
-	for i, n := range n.Children() {
+	for _, n := range n.Children() {
 		switch n.Name {
 		case "Repeat":
-			if i != 0 {
-				return nil, NewInvalidNodeError("Repeat", n.Name)
-			}
 			repeat, err := ParseRepeat(n)
 			if err != nil {
 				return nil, err
 			}
 			r = repeat
 		case "Rulename":
-			v := Rulename(n.Value())
-			return &Repetition{
-				Repeat: r,
-				Value:  &v,
-			}, nil
+			rn := Rulename(n.Value())
+			v = &rn
 		case "Alternation":
 			a, err := ParseAlternation(n)
 			if err != nil {
 				return nil, err
 			}
-			return &Repetition{
-				Repeat: r,
-				Value:  a,
-			}, nil
+			v = a
 		case "Option":
 			o, err := ParseOption(n)
 			if err != nil {
 				return nil, err
 			}
-			return &Repetition{
-				Repeat: r,
-				Value:  o,
-			}, nil
+			v = o
 		case "CharVal":
-			v := CharVal(n.Value())
-			return &Repetition{
-				Repeat: r,
-				Value:  &v,
-			}, nil
+			cv := CharVal(n.Value())
+			v = &cv
 		case "NumVal":
-			v := NumVal(n.Children()[0].Value())
-			return &Repetition{
-				Repeat: r,
-				Value:  &v,
-			}, nil
+			nv := NumVal(n.Children()[0].Value())
+			v = &nv
 		case "ProseVal":
-			v := ProseVal(n.Value())
-			return &Repetition{
-				Repeat: r,
-				Value:  &v,
-			}, nil
+			pv := ProseVal(n.Value())
+			v = &pv
 		default:
 			return nil, NewInvalidNodeError("Element / Repeat", n.Name)
 		}
 	}
-	return nil, NewInvalidNodeError("Element / Repeat", "")
+	return &Repetition{
+		Repeat: r,
+		Value:  v,
+	}, nil
 }
 
 func (r *Repetition) String() string {

@@ -3,11 +3,12 @@ package abnf_test
 import (
 	_ "embed"
 	"fmt"
+	"testing"
+
 	"github.com/0x51-dev/upeg/abnf"
-	"github.com/0x51-dev/upeg/abnf/ir"
+	"github.com/0x51-dev/upeg/ir"
 	"github.com/0x51-dev/upeg/parser"
 	"github.com/0x51-dev/upeg/parser/op"
-	"testing"
 )
 
 var (
