@@ -1,9 +1,9 @@
 package parser_test
 
 import (
-	"fmt"
-	. "github.com/0x51-dev/upeg/parser"
 	"testing"
+
+	. "github.com/0x51-dev/upeg/parser"
 )
 
 func TestReader(t *testing.T) {
@@ -104,7 +104,6 @@ func TestReader_Cursor(t *testing.T) {
 			lastNl:   4,
 		},
 	} {
-		fmt.Println(test.input)
 		r, err := NewReader([]rune(test.input))
 		if err != nil {
 			t.Fatal(err)

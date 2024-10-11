@@ -2,6 +2,7 @@ package gen_test
 
 import (
 	"fmt"
+
 	"github.com/0x51-dev/upeg/abnf/gen"
 )
 

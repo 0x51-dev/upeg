@@ -1,11 +1,57 @@
 package ir_test
 
 import (
-	"github.com/0x51-dev/upeg/abnf"
-	"github.com/0x51-dev/upeg/abnf/ir"
-	"github.com/0x51-dev/upeg/parser"
 	"testing"
+
+	"github.com/0x51-dev/upeg/abnf"
+	"github.com/0x51-dev/upeg/bnf"
+	"github.com/0x51-dev/upeg/ir"
+	"github.com/0x51-dev/upeg/parser"
 )
+
+func TestBNF_Rulelist(t *testing.T) {
+	for _, test := range []struct {
+		raw      string
+		expected string
+	}{
+		{
+			raw:      "<X> ::= <Y>",
+			expected: "X = Y",
+		},
+		{
+			raw:      "<X> ::= <Y> <Z>",
+			expected: "X = ( Y Z )",
+		},
+		{
+			raw:      "<X> ::= <Y> | <Z>",
+			expected: "X = ( Y / Z )",
+		},
+		{
+			raw:      "<X> ::= <Y>+",
+			expected: "X = 1*Y",
+		},
+		{
+			raw:      "<X> ::= <Y>*",
+			expected: "X = *Y",
+		},
+	} {
+		p, err := parser.New([]rune(test.raw + "\n"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		n, err := p.ParseEOF(bnf.Rulelist)
+		if err != nil {
+			t.Fatal(err)
+		}
+		l, err := ir.ParseRulelist(n)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if l.String() != test.expected {
+			t.Errorf("expected %s, got %s", test.expected, l.String())
+		}
+	}
+}
 
 func TestParseAlternation(t *testing.T) {
 	for _, test := range []struct {

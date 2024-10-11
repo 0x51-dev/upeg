@@ -1,0 +1,20 @@
+; BNF
+rulelist       =  1*( rule / (*WSP c-nl) )
+rule           =  rulename-br defined-as elements c-nl
+rulename-br    =  "<" rulename ">"
+rulename       =  ALPHA *(ALPHA / DIGIT / "-")
+defined-as     =  *c-wsp ("::=") *c-wsp
+elements       =  alternation *WSP
+c-wsp          =  WSP / (c-nl WSP)
+c-nl           =  comment / CRLF
+comment        =  ";" *(WSP / VCHAR) CRLF
+alternation    =  concatenation *(*c-wsp "|" *c-wsp concatenation)
+concatenation  =  repetition *(1*c-wsp repetition)
+repetition     =  element [repeat]
+repeat         =  "*" / "+"
+element        =  rulename-br / group / option / char-val
+group          =  "(" *c-wsp alternation *c-wsp ")"
+option         =  "[" *c-wsp alternation *c-wsp "]"
+char-val       = literal-double / literal-single
+literal-double =  %x22 *(%x20-21 / %x23-7E) %x22
+literal-single =  %x27 *(%x20-26 / %x28-7E) %x27

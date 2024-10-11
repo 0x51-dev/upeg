@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
-	"github.com/0x51-dev/upeg/abnf"
-	"github.com/0x51-dev/upeg/abnf/ir"
 	"io"
 	"io/fs"
 	"log"
@@ -13,6 +11,9 @@ import (
 	"strings"
 	"text/template"
 	"unicode"
+
+	"github.com/0x51-dev/upeg/abnf"
+	"github.com/0x51-dev/upeg/ir"
 )
 
 const (
