@@ -316,7 +316,7 @@ func (g *Generator) toGo(v any, references []string) string {
 			}
 			return fmt.Sprintf("'%s'", s)
 		default:
-			return string(*v)
+			return fmt.Sprintf("%q", s)
 		}
 	case *ir.Option:
 		return fmt.Sprintf("op.Optional{Value: %s}", g.toGo(v.Alternation, references))
