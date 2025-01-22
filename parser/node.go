@@ -1,5 +1,10 @@
 package parser
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Node is a node in the parse tree.
 type Node struct {
 	// Name is the name of the node.
@@ -8,6 +13,17 @@ type Node struct {
 	value string
 	// Children are the children of the node.
 	children []*Node
+}
+
+func (n *Node) String() string {
+	if len(n.children) == 0 {
+		return fmt.Sprintf("{%q: %q}", n.Name, n.value)
+	}
+	b := make([]string, len(n.children))
+	for i, c := range n.children {
+		b[i] = c.String()
+	}
+	return fmt.Sprintf("{%q: [%s]}", n.Name, strings.Join(b, ", "))
 }
 
 // NewNode creates a new node.
